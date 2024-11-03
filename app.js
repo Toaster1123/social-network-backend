@@ -3,19 +3,27 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const fs = require('fs');
+require('dotenv').config();
 
 const app = express();
 
 // view engine setup
-app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'jade');
+//Раздавать файлы статические
+app.use('/uploads', express.static('uploads'));
 
-app.use('/api', require('/routes'));
+app.use('/api', require('./routes'));
+
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
